@@ -15,10 +15,7 @@ download_if_missing("similarity.pkl", "https://drive.google.com/file/d/173GZwn0b
 download_if_missing("tmdb_5000_credits.csv", "https://drive.google.com/file/d/1j4FCtsw69CjshbyYHVAnfBRCMM4uYh4r/view?usp=drive_link")
 
 # --- LOAD FILES ---
-# Load the movies data from the CSV file
-movies = pd.read_csv('tmdb_5000_credits.csv')
-
-# Load the similarity matrix
+movies = pickle.load(open('movies.pkl', 'rb'))
 similarity = pickle.load(open('similarity.pkl', 'rb'))
 
 # --- RECOMMENDER FUNCTION ---
@@ -56,7 +53,6 @@ st.markdown("""
 # --- UI ---
 st.markdown('<div class="title">🎥 Movie Recommender System</div>', unsafe_allow_html=True)
 
-# Populate the list of movie titles
 movie_list = movies['title'].values
 selected_movie = st.selectbox("Select a movie to get recommendations:", movie_list)
 
