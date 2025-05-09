@@ -2,28 +2,21 @@ import os
 import pickle
 import streamlit as st
 import pandas as pd
-import urllib.request
+import gdown
 
 # --- DOWNLOAD FILES IF MISSING ---
 def download_if_missing(filename, gdrive_file_id):
     if not os.path.exists(filename):
-        download_url = f"https://drive.google.com/uc?export=download&id={gdrive_file_id}"
-        try:
-            urllib.request.urlretrieve(download_url, filename)
-            print(f"Downloaded: {filename}")
-        except Exception as e:
-            print(f"Failed to download {filename}: {e}")
+        url = f"https://drive.google.com/uc?id={gdrive_file_id}"
+        gdown.download(url, filename, quiet=False)
 
 # --- DOWNLOAD FILES ---
-download_if_missing("similarity.pkl", "173GZwn0bqnQyNpV_Afj2o4xuj_u0zzzI")
 download_if_missing("movies.pkl", "1jfFLU0ZP3uUguMCKjIri9m_MIfvnkxRA")
+download_if_missing("similarity.pkl", "173GZwn0bqnQyNpV_Afj2o4xuj_u0zzzI")
 
 # --- LOAD FILES ---
-with open("movies.pkl", "rb") as f:
-    movies = pickle.load(f)
-
-with open("similarity.pkl", "rb") as f:
-    similarity = pickle.load(f)
+movies = pickle.load(open('movies.pkl', 'rb'))
+similarity = pickle.load(open('similarity.pkl', 'rb'))
 
 # --- RECOMMENDER FUNCTION ---
 def recommend(movie):
@@ -35,7 +28,6 @@ def recommend(movie):
 # --- STREAMLIT UI CONFIG ---
 st.set_page_config(page_title="Movie Recommender", page_icon="🎬", layout="centered")
 
-# --- CUSTOM CSS ---
 st.markdown("""
     <style>
     .title {
@@ -57,7 +49,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- UI ---
 st.markdown('<div class="title">🎥 Movie Recommender System</div>', unsafe_allow_html=True)
 
 movie_list = movies['title'].values
