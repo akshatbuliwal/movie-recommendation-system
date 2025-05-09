@@ -5,18 +5,25 @@ import pandas as pd
 import urllib.request
 
 # --- DOWNLOAD FILES IF MISSING ---
-def download_if_missing(filename, url):
+def download_if_missing(filename, gdrive_file_id):
     if not os.path.exists(filename):
-        gdrive_url = f"https://drive.google.com/uc?export=download&id={url.split('/d/')[1].split('/')[0]}"
-        urllib.request.urlretrieve(gdrive_url, filename)
+        download_url = f"https://drive.google.com/uc?export=download&id={gdrive_file_id}"
+        try:
+            urllib.request.urlretrieve(download_url, filename)
+            print(f"Downloaded: {filename}")
+        except Exception as e:
+            print(f"Failed to download {filename}: {e}")
 
-# Download files only if not present
-download_if_missing("similarity.pkl", "https://drive.google.com/file/d/173GZwn0bqnQyNpV_Afj2o4xuj_u0zzzI/view?usp=drive_link")
-download_if_missing("tmdb_5000_credits.csv", "https://drive.google.com/file/d/1j4FCtsw69CjshbyYHVAnfBRCMM4uYh4r/view?usp=drive_link")
+# --- DOWNLOAD FILES ---
+download_if_missing("similarity.pkl", "173GZwn0bqnQyNpV_Afj2o4xuj_u0zzzI")
+download_if_missing("movies.pkl", "1jfFLU0ZP3uUguMCKjIri9m_MIfvnkxRA")
 
 # --- LOAD FILES ---
-movies = pickle.load(open('movies.pkl', 'rb'))
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+with open("movies.pkl", "rb") as f:
+    movies = pickle.load(f)
+
+with open("similarity.pkl", "rb") as f:
+    similarity = pickle.load(f)
 
 # --- RECOMMENDER FUNCTION ---
 def recommend(movie):
