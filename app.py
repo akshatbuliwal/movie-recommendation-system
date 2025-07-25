@@ -8,30 +8,42 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Load movies.pkl
-with open('movies.pkl', 'rb') as f:
-    movies = pickle.load(f)
+# Load movies.pkl locally
+movies = pickle.load(open('movies.pkl', 'rb'))
 
-# Download similarity.pkl from Google Drive if it doesn't exist
-def download_similarity_file():
-    file_id = "1WQs0UfDCdmtBHe74y1z571kAGIm-ogp2"
-    url = f"https://drive.google.com/uc?export=download&id={file_id}"
-    response = requests.get(url)
-    with open("similarity.pkl", "wb") as f:
-        f.write(response.content)
+# Download and load similarity.pkl from Google Drive
+SIMILARITY_PICKLE_URL = "https://drive.google.com/uc?id=1WQs0UfDCdmtBHe74y1z571kAGIm-ogp2"
+SIMILARITY_FILE = "similarity.pkl"
 
-# Check if similarity.pkl exists, otherwise download
-if not os.path.exists('similarity.pkl'):
-    download_similarity_file()
+def download_similarity():
+    if not os.path.exists(SIMILARITY_FILE):
+        print("📥 Downloading similarity.pkl...")
+        r = requests.get(SIMILARITY_PICKLE_URL)
+        with open(SIMILARITY_FILE, 'wb') as f:
+            f.write(r.content)
 
-with open('similarity.pkl', 'rb') as f:
-    similarity = pickle.load(f)
+download_similarity()
+similarity = pickle.load(open(SIMILARITY_FILE, 'rb'))
 
 @app.route('/')
 def home():
-    return "✅ Backend is running"
+    return "✅ Backend is running!"
 
-# Add other routes (e.g., /recommend) below as needed
+@app.route('/recommend', methods=['POST'])
+def recommend():
+    data = request.get_json()
+    movie_name = data.get('movie', "").lower()
+
+    movie_list = movies['title'].str.lower().tolist()
+    if movie_name not in movie_list:
+        return jsonify({'recommended_movies': []}), 404
+
+    index = movie_list.index(movie_name)
+    distances = list(enumerate(similarity[index]))
+    movies_sorted = sorted(distances, key=lambda x: x[1], reverse=True)[1:6]
+
+    recommended_movies = [movies.iloc[i[0]].title for i in movies_sorted]
+    return jsonify({'recommended_movies': recommended_movies})
 
 if __name__ == '__main__':
     app.run(debug=True)
