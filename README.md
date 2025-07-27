@@ -26,6 +26,6 @@ ML/NLP: CountVectorizer, Cosine Similarity, Stemming, ast.literal_eval
 Deployment Tools: Flask-RESTful, pickle
 
 🔗 Project Links
-🔧 Frontend Repository: GitHub - movie-recommendation-system-frontend
+[Frontend Repository](https://github.com/akshatbuliwal/movie-recommendation-system-frontend)
+[Download similarity.pkl](https://drive.google.com/file/d/1WQs0UfDCdmtBHe74y1z571kAGIm-ogp2/view?usp=drive_link)
 
-📦 Trained Similarity Matrix (similarity.pkl): Google Drive
